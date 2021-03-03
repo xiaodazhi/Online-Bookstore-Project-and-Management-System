@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+
+    <img id="pic" src="/">
+    <h2 id="name"></h2>
+    <button onclick="favo()">收藏</button>
+    <button onclick="cart()">添加购物车</button>
+    <span id="price"></span>
+    <span id="author"></span>
+    <div id="content"></div>
+
+
+    <script>
+        var book = null;
+        var search = location.search;//?id=6
+        var paramStr = search.split("?");
+        if (paramStr != null && paramStr.length > 0) {
+            paramStr = paramStr[1];
+            var params = paramStr.split("&");
+            for (var i = 0 ; i < params.length ; i ++) {
+                var key = params[i].split("=")[0];
+                var value = params[i].split("=")[1];
+                if (key == "id") {//找到了商品的id
+                    //发送ajax获取商品的信息
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("get", "/shop/getBook.api?id=" + value);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            var result = JSON.parse(xhr.responseText);
+                            var data = result.data;
+                            var dataObj = JSON.parse(data);
+                            book = dataObj;
+                            var picUrl = JSON.parse(dataObj.picUrl);
+
+                            var name = document.getElementById("name");
+                            var price = document.getElementById("price");
+                            var author = document.getElementById("author");
+                            var content = document.getElementById("content");
+                            var pic = document.getElementById("pic");
+                            name.innerText = dataObj.name;
+                            price.innerText = "价格:" + dataObj.price;
+                            author.innerText = "作者:" + dataObj.author;
+                            content.innerText = dataObj.detail;
+                            pic.src = "/shop/getPic.api?path=" + picUrl.realFileName;
+                        }
+                    }
+                    xhr.send();
+                }
+            }
+        }
+        
+        function favo() {
+            var favoXhr = new XMLHttpRequest();
+            console.log(book.id);
+            favoXhr.open("get", "/shop/favo.api?id=" + book.id);
+            favoXhr.onreadystatechange = function () {
+                if (favoXhr.readyState == 4 && favoXhr.status == 200) {
+                    alert("收藏成功");
+                }
+            }
+            favoXhr.send();
+        }
+        
+        function cart() {
+            var cartXhr = new XMLHttpRequest();
+            cartXhr.open("get", "/shop/addCart.api?id=" + book.id);
+            cartXhr.onreadystatechange = function () {
+                if (cartXhr.readyState == 4 && cartXhr.status == 200) {
+                    alert("添加购物车成功");
+                }
+            }
+            cartXhr.send();
+        }
+    </script>
+</body>
+</html>

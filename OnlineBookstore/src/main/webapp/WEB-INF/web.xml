@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+
+    <welcome-file-list>
+        <welcome-file>/shop/index.html</welcome-file>
+    </welcome-file-list>
+
+<!--    <filter>-->
+<!--        <filter-name>myFilter</filter-name>-->
+<!--        <filter-class>com.panda.filter.LoginFilter</filter-class>-->
+<!--    </filter>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>myFilter</filter-name>-->
+<!--        <servlet-name>request</servlet-name>-->
+<!--    </filter-mapping>-->
+    <filter>
+      <filter-name>AdminFilter</filter-name>
+      <filter-class>com.panda.filter.AdminLoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>AdminFilter</filter-name>
+      <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>ShopFilter</filter-name>
+      <filter-class>com.panda.filter.ShopLoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>ShopFilter</filter-name>
+      <url-pattern>/shop/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>request</servlet-name>
+        <servlet-class>com.panda.utils.web.WebUtil</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>request</servlet-name>
+        <url-pattern>*.api</url-pattern>
+    </servlet-mapping>
+
+</web-app>

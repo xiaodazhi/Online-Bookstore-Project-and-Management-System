@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Panda的小书店</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            padding: 0px;
+        }
+        header {
+            height: 50px;
+            background: lightgray;
+        }
+        #content {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            /*background: pink;*/
+        }
+        #left {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 80%;
+            /*background: dodgerblue;*/
+        }
+        #right {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            width: 20%;
+            /*background: yellowgreen;*/
+        }
+        #buttons {
+            position: absolute;
+            width: 400px;
+            height: 50px;
+            right: 50px;
+            /*background: darkgray;*/
+        }
+        #buttons a {
+            line-height: 50px;
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        .book {
+            display: inline-block;
+            width: 200px;
+            height: 200px;
+            background: slateblue;
+            border: 1px solid gray;
+            margin: 10px 0px 0px 10px;
+        }
+        .book .img {
+            width: 190px;
+            height: 140px;
+            background: yellow;
+            margin: 5px 5px 0px 5px;
+        }
+        .book span {
+            display: block;
+            background: yellowgreen;
+            margin: 5px 5px 0px 5px;
+        }
+        #chat {
+            width: 100%;
+            height: 500px;
+            background: deepskyblue;
+            overflow: scroll;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="buttons">
+            <a href="#">订单信息</a>
+            <a href="/shop/viewRecord.html">浏览记录</a>
+            <a href="/shop/favorite.html">收藏</a>
+            <a href="/shop/cart.html">购物车</a>
+            <a href="#">用户</a>
+        </div>
+    </header>
+    <div id="content">
+        <div id="left">
+<!--            <div class="book">-->
+<!--                <img class="img"></img>-->
+<!--                <span><a>这是一本xxxx书</a></span>-->
+<!--                <span>100元 <a href="#">加入购物车</a></span>-->
+<!--            </div>-->
+        </div>
+        <div id="right">
+            <div id="chat">
+
+            </div>
+            <input type="text" id="msg" placeholder="请输入内容">
+            <button onclick="sendMsg()">发送</button>
+        </div>
+    </div>
+
+
+    <script>
+        function sendMsg() {
+            var text = document.getElementById("msg").value;
+            if (text == null || text == "") {
+                return;
+            }
+            var chatXhr = new XMLHttpRequest();
+            chatXhr.open("get", "http://127.0.0.1:8080/shop/chat/userSend.api?text=" + text);
+            chatXhr.onreadystatechange = function () {
+                if (chatXhr.readyState == 4 && chatXhr.status == 200) {
+                    document.getElementById("msg").value = "";
+                }
+            }
+            chatXhr.send();
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.open("get", "http://127.0.0.1:8080/shop/book/allBook.api");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var result = JSON.parse(xhr.responseText);
+                var data = JSON.parse(result.data);
+                var left = document.getElementById("left");
+                for (var i = 0 ; i < data.length ; i ++) {
+                    console.log(data[i].id);
+                    console.log(data[i].picUrl);
+                    console.log(JSON.parse(data[i].picUrl).realFileName);
+                    console.log(data[i].name);
+                    console.log(data[i].price);
+                    console.log("===================");
+                    var bookDiv = document.createElement("div");
+                    bookDiv.classList.add("book");
+                    var img = document.createElement("img");
+                    img.classList.add("img");
+                    img.src = "/shop/getPic.api?path=" + JSON.parse(data[i].picUrl).realFileName;
+                    var bookNameSpan = document.createElement("span");
+                    var bookNameLink = document.createElement("a");
+                    var bookPriceSpan = document.createElement("span");
+                    var link = document.createElement("a");
+                    link.innerText = "加入购物车";
+                    link.href = "#";
+                    bookNameLink.innerText = data[i].name;
+                    bookNameLink.href = "/shop/detail.html?id=" + data[i].id;
+                    bookNameSpan.appendChild(bookNameLink);
+                    bookPriceSpan.innerText = "价格：" + data[i].price;
+                    bookPriceSpan.appendChild(link);
+                    bookDiv.appendChild(img);
+                    bookDiv.appendChild(bookNameSpan);
+                    bookDiv.appendChild(bookPriceSpan);
+                    left.appendChild(bookDiv);
+                }
+            }
+        }
+        xhr.send();
+
+        setInterval(function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open("get", "http://127.0.0.1:8080/shop/chat/getChatMsg.api");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var result = JSON.parse(xhr.responseText);
+                    var data = JSON.parse(result.data);
+                    var content = document.getElementById("chat");
+                    content.innerHTML = "";
+                    for (var i = 0 ; i < data.length ; i ++) {
+                        var div = document.createElement("div");
+                        div.innerText = data[i];
+                        content.appendChild(div);
+                    }
+                }
+            }
+            xhr.send();
+        }, 1000);
+    </script>
+</body>
+</html>

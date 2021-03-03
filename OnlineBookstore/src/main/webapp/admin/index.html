@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Panda书店的管理后台</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        header {
+            width: 100%;
+            height: 80px;
+            border-bottom: 1px solid gray;
+        }
+        h1 {
+            line-height: 80px;
+            text-align: center;
+        }
+        .content {
+            position: relative;
+            width: 100%;
+            height: 90%;
+        }
+        .left {
+            position: absolute;
+            display: inline-block;
+            width: 10%;
+            height: 100%;
+            left: 0px;
+            top: 0px;
+            border-right: 1px solid gray;
+        }
+        .right {
+            position: absolute;
+            display: inline-block;
+            width: 90%;
+            height: 100%;
+            left: 10%;
+            top: 0px;
+        }
+        .menu {
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 22px;
+            border-bottom: 1px solid gray;
+            cursor: pointer;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: 1px solid red;
+        }
+    </style>
+    <script>
+        function jump(src) {
+            var ifr = document.getElementById("ifr");
+            ifr.src = "http://127.0.0.1:8080/admin" + src;
+        }
+    </script>
+</head>
+<body>
+    <header><h1>Panda书店的管理后台</h1></header>
+    <div class="content">
+        <div class="left">
+            <div class="menu" onclick="jump('/TagsList.html')">标签列表</div>
+            <div class="menu" onclick="jump('/AddTags.html')">添加标签</div>
+            <div class="menu" onclick="jump('/AddBook.html')">添加图书</div>
+            <div class="menu" onclick="jump('/BookList.html')">图书列表</div>
+            <div class="menu" onclick="jump('/Order.html')">订单列表</div>
+            <div class="menu" onclick="jump('/ChatList.html')">正在聊天</div>
+        </div>
+        <div class="right">
+            <iframe src="http://www.baidu.com" id="ifr"></iframe>
+        </div>
+    </div>
+</body>
+</html>

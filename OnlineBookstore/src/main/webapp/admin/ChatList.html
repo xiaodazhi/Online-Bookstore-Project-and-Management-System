@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        #chatList {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 50%;
+        }
+        .chatItem {
+            position: relative;
+            width: 100%;
+            height: 50px;
+            border: 1px solid darkgray;
+            margin: 10px 0px 0px 10px;
+        }
+        #chat {
+            position: absolute;
+            top: 0px;
+            left: 60%;
+            width: 35%;
+            height: 600px;
+
+        }
+        #content {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: slateblue;
+            overflow: scroll;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatList">
+<!--        <div class="chatItem">-->
+<!--            <span>用户名：xxx</span>-->
+<!--            <span>是否为新消息：YES</span>-->
+<!--            <button onclick="goToChat()">聊天</button>-->
+<!--        </div>-->
+    </div>
+    <div id="chat">
+        <div id="content">
+
+        </div>
+        <input type="text" id="msg" />
+        <button onclick="sendMsg()" id="sendBtn">发送</button>
+    </div>
+
+    <script>
+        var chatUserId = null;
+        function goToChat() {
+            chatUserId = this.userId;
+            var xhr = new XMLHttpRequest();
+            xhr.open("get", "http://127.0.0.1:8080/admin/chat/getChatMsg.api?userId=" + this.userId);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var result = JSON.parse(xhr.responseText);
+                    var data = JSON.parse(result.data);
+                    var content = document.getElementById("content");
+                    for (var i = 0 ; i < data.length ; i ++) {
+                        var div = document.createElement("div");
+                        div.innerText = data[i];
+                        content.appendChild(div);
+                    }
+                }
+            }
+            xhr.send();
+
+        }
+        
+        function sendMsg() {
+            var text = document.getElementById("msg").value;
+            if (text == null || text == "") {
+                return;
+            }
+            var chatXhr = new XMLHttpRequest();
+            chatXhr.open("get", "http://127.0.0.1:8080/admin/chat/adminSend.api?text=" + text + "&userId=" + chatUserId);
+            chatXhr.onreadystatechange = function () {
+                if (chatXhr.readyState == 4 && chatXhr.status == 200) {
+                    document.getElementById("msg").value = "";
+                }
+            }
+            chatXhr.send();
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("get", "http://127.0.0.1:8080/admin/chat/chatList.api");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var result = JSON.parse(xhr.responseText);
+                var data = JSON.parse(result.data);
+                console.log(data);
+                var chatList = document.getElementById("chatList");
+                for (var i = 0 ; i < data.length ; i ++) {
+                    var chatItemDiv = document.createElement("div");
+                    chatItemDiv.classList.add("chatItem")
+                    var userNameSpan = document.createElement("span");
+                    var statusSpan = document.createElement("span");
+                    var btn = document.createElement("button");
+                    userNameSpan.innerText = "用户名：" + data[i].userName;
+                    statusSpan.innerText = "是否需要回复：" + data[i].needReply;
+                    btn.innerText = "聊天";
+                    btn.userId = data[i].userId;
+                    btn.onclick = goToChat;
+                    chatItemDiv.appendChild(userNameSpan);
+                    chatItemDiv.appendChild(statusSpan);
+                    chatItemDiv.appendChild(btn);
+                    chatList.appendChild(chatItemDiv);
+                }
+            }
+        }
+        xhr.send();
+    </script>
+</body>
+</html>

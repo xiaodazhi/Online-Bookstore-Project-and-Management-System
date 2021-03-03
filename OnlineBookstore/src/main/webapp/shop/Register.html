@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        function register() {
+            var account = document.getElementById("account").value;
+            var password = document.getElementById("password").value;
+            var repeat = document.getElementById("repeat").value;
+            var email = document.getElementById("email").value;
+            if (password != repeat) {
+                alert("两次输入的密码不一致");
+                return;
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open("get", "/shop/register.api?account=" + account + "&password=" + password + "&email=" + email);
+            xhr.onreadystatechange = function (ev) {
+                if (xhr.readyState ==4 && xhr.status ==200){
+                    var result = JSON.parse(xhr.responseText);
+                    if (result.status == "OK") {//注册成功，跳转页面
+                        alert("注册成功，点击确定跳转到登录页面");
+                        location.href = "/shop/login.html";
+                    } else {//失败，需要告知用户原因
+                        alert(result.msg);
+                    }
+                }
+            }
+            xhr.send();
+        }
+    </script>
+</head>
+<body>
+    <h1>商城用户注册页面</h1>
+    <span>用户名:</span><input type="text" id="account"/> <br/>
+    <span>密码：</span><input type="password" id="password"/> <br/>
+    <span>重复密码：</span><input type="password" id="repeat"/> <br/>
+    <span>邮箱：</span><input type="text" id="email"/> <br/>
+    <button onclick="register()">注册</button>
+</body>
+</html>

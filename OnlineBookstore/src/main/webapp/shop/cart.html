@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        #content {
+            width: 100%;
+        }
+        .book {
+            position: relative;
+            width: 90%;
+            height:60px;
+            border: 1px solid darkgray;
+            margin: 10px 0px 5px 20px;
+        }
+        .book img {
+            width: 10%;
+            height: 100%;
+        }
+
+        .name {
+            position: absolute;
+            top: 0px;
+            left: 12%;
+            display: inline-block;
+            height: 30px;
+            line-height: 30px;
+        }
+        .count {
+            position: absolute;
+            top: 30px;
+            left: 12%;
+            display: inline-block;
+            height: 30px;
+            line-height: 30px;
+        }
+        .book button {
+            position: absolute;
+            display: inline-block;
+            width: 100px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            top: 5px;
+            right: 50px;
+        }
+    </style>
+</head>
+<body>
+<input type="text" placeholder="请输入邮寄地址" id="address"/><button onclick="order()">下订单</button>
+<div id="content">
+<!--            <div class="book">-->
+<!--                <img src="https://www.baidu.com/img/bd_logo1.png">-->
+<!--                <span class="name">Panda</span>-->
+<!--                <span class="count">1</span>-->
+<!--                <button>移除购物车</button>-->
+<!--            </div>-->
+</div>
+
+<script>
+    function order() {
+        var address = document.getElementById("address").value;
+        var orderXhr = new XMLHttpRequest();
+        orderXhr.open("get", "/shop/order.api?address=" + address);
+        orderXhr.onreadystatechange = function () {
+            if (orderXhr.readyState == 4 && orderXhr.status == 200) {
+                alert("下单成功");
+                location.href = location.href;
+            }
+        }
+        orderXhr.send();
+    }
+    function removeCart() {
+        var cancelXhr = new XMLHttpRequest();
+        cancelXhr.open("get", "/shop/removeCart.api?id=" + this.bookId);
+        cancelXhr.onreadystatechange = function () {
+            if (cancelXhr.readyState == 4 && cancelXhr.status == 200) {
+                alert("移除成功");
+                location.href = location.href;
+            }
+        }
+        cancelXhr.send();
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open("get", "/shop/cartList.api");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var result = JSON.parse(xhr.responseText);
+            var data = JSON.parse(result.data);
+            console.log(data);
+            var content = document.getElementById("content");
+            for (var i = 0 ; i < data.length ; i ++) {
+                var obj = data[i];
+                var book = document.createElement("div");
+                book.classList.add("book");
+                var pic = document.createElement("img");
+                var name = document.createElement("span");
+                name.classList.add("name");
+                var count = document.createElement("span");
+                count.classList.add("count");
+                var cancel = document.createElement("button");
+                cancel.innerText = "移除购物车";
+                cancel.onclick = removeCart;
+                cancel.bookId = obj.id;
+                name.innerText = obj.name;
+                count.innerText = "数量：" + obj.count;
+                var picUrl = JSON.parse(obj.picUrl);
+                pic.src = "/shop/getPic.api?path=" + picUrl.realFileName;
+                book.appendChild(pic);
+                book.appendChild(name);
+                book.appendChild(count);
+                book.appendChild(cancel);
+                content.appendChild(book);
+            }
+        }
+    }
+    xhr.send();
+</script>
+</body>
+</html>

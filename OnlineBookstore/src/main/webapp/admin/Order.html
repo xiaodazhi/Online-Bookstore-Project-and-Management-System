@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        .order {
+            width: 90%;
+            height: 60px;
+            border: 1px solid darkgray;
+            margin: 10px 0px 0px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+<!--        <div class="order">-->
+<!--            <span>订单号：xxx, 书A-1本-100元，书B-2本-90元 总价：xxx元，地址：xxxxx</span>-->
+<!--            <button onclick="send()">发货</button>-->
+<!--        </div>-->
+    </div>
+
+    <script>
+        
+        function send() {
+            var sendXhr = new XMLHttpRequest();
+            sendXhr.open("get", "/admin/orderSend.api?orderId=" + this.orderId);
+            sendXhr.onreadystatechange = function (ev) {
+                if (sendXhr.readyState == 4 && sendXhr.status == 200) {
+                    alert("已发货");
+                }
+            }
+            sendXhr.send();
+        }
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open("get", "/admin/orderList.api");
+        xhr.onreadystatechange = function (ev) {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var result = JSON.parse(xhr.responseText)
+                var data = JSON.parse(result.data);
+                var content = document.getElementById("content");
+                for (var i = 0 ; i < data.length ; i ++) {
+                    var orderDiv = document.createElement("div");
+                    var orderSpan = document.createElement("span");
+                    var orderBtn = document.createElement("button");
+                    orderSpan.innerText = data[i].msg;
+                    orderBtn.innerText = "发货";
+                    orderBtn.onclick = send;
+                    orderBtn.orderId = data[i].orderId;
+                    orderDiv.appendChild(orderSpan);
+                    orderDiv.appendChild(orderBtn);
+                    content.appendChild(orderDiv);
+                }
+            }
+        }
+        xhr.send();
+    </script>
+</body>
+</html>

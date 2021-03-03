@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        // function submit() {
+        //     var name = document.getElementById("name").value;
+        //     var author = document.getElementById("author").value;
+        //     var count = document.getElementById("count").value;
+        //     var detail = document.getElementById("detail").value;
+        //     var pic = document.getElementById("pic").value;
+        //     var data = {
+        //         name: name,
+        //         author: author,
+        //         count: count,
+        //         detail : detail
+        //     }
+        //     var xhr = new XMLHttpRequest();
+        //     xhr.open("post", "http://127.0.0.1:8080/admin/book/add.api");
+        //     xhr.onreadystatechange=function () {
+        //         if (xhr.readyState ==4 && xhr.status ==200){
+        //             alert(xhr.responseText);
+        //         }
+        //     }
+        //     xhr.send(JSON.stringify(data));
+        // }
+        function submit() {
+            var name = document.getElementById("name").value;
+            var author = document.getElementById("author").value;
+            var count = document.getElementById("count").value;
+            var price = document.getElementById("price").value;
+            var detail = document.getElementById("detail").value;
+            var pics = document.getElementById("pic").files;
+            var tags = document.getElementById("tags").value;
+            console.log(tags);
+
+            if (pics.length > 1) {
+                alert("最多只能上传一个文件");
+                return;
+            }
+
+            var form = new FormData();
+            form.append("name", name);
+            form.append("author", author);
+            form.append("count", count);
+            form.append("price", price);
+            form.append("detail", detail);
+            form.append("tags", tags);
+            for (var i = 0 ; i < pics.length ; i ++) {
+                form.append("pic", pics[i]);
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open("post", "http://127.0.0.1:8080/admin/book/add.api");
+
+            // xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            // xhr.setRequestHeader("Content-type","multipart/form-data");
+            xhr.onreadystatechange=function () {
+                if (xhr.readyState ==4 && xhr.status ==200){
+                    alert(xhr.responseText);
+                }
+            }
+            xhr.send(form);
+        }
+    </script>
+</head>
+<body>
+<h1>添加图书</h1>
+<!--<form action="/admin/book/add.api" method="post" enctype="multipart/form-data">-->
+<table>
+    <tr>
+        <td>书名</td><td><input type="text" name="name" id="name"></td>
+    </tr>
+    <tr>
+        <td>作者</td><td><input type="text" name="author" id="author"></td>
+    </tr>
+    <tr>
+        <td>库存</td><td><input type="text" name="count" id="count"></td>
+    </tr>
+    <tr>
+        <td>价格</td><td><input type="text" name="price" id="price"></td>
+    </tr>
+    <tr>
+        <td>详情</td><td><textarea name="detail" id="detail"></textarea></td>
+    </tr>
+    <tr>
+        <td>图片</td><td><input type="file" name="pic" id="pic" multiple="multiple"></td>
+    </tr>
+    <tr>
+        <td>标签</td>
+        <td>
+            <select id="tags" name="tags">
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><button onclick="submit()">添加图书</button></td>
+<!--        <td><input type="submit" value="添加图书"></td>-->
+    </tr>
+</table>
+<!--</form>-->
+<script>
+    var xhrReq = new XMLHttpRequest();
+    xhrReq.open("get", "/admin/tags/all.api");
+    xhrReq.onreadystatechange=function () {
+        if (xhrReq.readyState ==4 && xhrReq.status ==200){
+            var result = JSON.parse(xhrReq.responseText);
+            //staus, msg, data
+            var data = JSON.parse(result.data);
+            var tags = document.getElementById("tags");
+            for (var i = 0 ; i < data.length ; i ++) {
+                var option = document.createElement("option");
+                option.innerText = data[i].name;
+                option.value = data[i].id;
+                tags.appendChild(option);
+            }
+
+        }
+    }
+    xhrReq.send();
+</script>
+</body>
+</html>

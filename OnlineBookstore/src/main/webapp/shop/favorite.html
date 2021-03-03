@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        #content {
+            width: 100%;
+        }
+        .book {
+            position: relative;
+            width: 90%;
+            height:60px;
+            border: 1px solid darkgray;
+            margin: 10px 0px 5px 20px;
+        }
+        .book img {
+            width: 10%;
+            height: 100%;
+        }
+
+        .name {
+            position: absolute;
+            top: 0px;
+            left: 12%;
+            display: inline-block;
+            height: 30px;
+            line-height: 30px;
+        }
+        .price {
+            position: absolute;
+            top: 30px;
+            left: 12%;
+            display: inline-block;
+            height: 30px;
+            line-height: 30px;
+        }
+        .book button {
+            position: absolute;
+            display: inline-block;
+            width: 100px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            top: 5px;
+            right: 50px;
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+    <!--        <div class="book">-->
+    <!--            <img src="https://www.baidu.com/img/bd_logo1.png">-->
+    <!--            <span class="name">Panda</span>-->
+    <!--            <span class="price">52</span>-->
+    <!--        </div>-->
+</div>
+
+<script>
+    function cancelFavo() {
+        var cancelXhr = new XMLHttpRequest();
+        cancelXhr.open("get", "/shop/cancelFavo.api?id=" + this.bookId);
+        cancelXhr.onreadystatechange = function () {
+            if (cancelXhr.readyState == 4 && cancelXhr.status == 200) {
+                alert("取消成功");
+                location.href = location.href;
+            }
+        }
+        cancelXhr.send();
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open("get", "/shop/favoList.api");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var result = JSON.parse(xhr.responseText);
+            var data = JSON.parse(result.data);
+            var content = document.getElementById("content");
+            for (var i = 0 ; i < data.length ; i ++) {
+                var obj = data[i];
+                var book = document.createElement("div");
+                book.classList.add("book");
+                var pic = document.createElement("img");
+                var name = document.createElement("span");
+                name.classList.add("name");
+                var price = document.createElement("span");
+                price.classList.add("price");
+                var cancel = document.createElement("button");
+                cancel.innerText = "取消收藏";
+                cancel.onclick = cancelFavo;
+                cancel.bookId = obj.id;
+                name.innerText = obj.name;
+                price.innerText = obj.price;
+                var picUrl = JSON.parse(obj.picUrl);
+                pic.src = "/shop/getPic.api?path=" + picUrl.realFileName;
+                book.appendChild(pic);
+                book.appendChild(name);
+                book.appendChild(price);
+                book.appendChild(cancel);
+                content.appendChild(book);
+
+            }
+        }
+    }
+    xhr.send();
+</script>
+</body>
+</html>

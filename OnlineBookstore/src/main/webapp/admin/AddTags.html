@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        function submit() {
+            var tag = document.getElementById("tag").value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("get", "http://127.0.0.1:8080/admin/tags/add.api?tag=" + tag);
+            xhr.onreadystatechange=function () {
+                if (xhr.readyState ==4 && xhr.status ==200){
+                    alert(xhr.responseText);
+                }
+            }
+            xhr.send();
+        }
+    </script>
+</head>
+<body>
+    <h1>添加标签</h1>
+    <table>
+        <tr>
+            <td>标签名</td><td><input type="text" id="tag"></td>
+        </tr>
+        <tr>
+            <td><button onclick="submit()">创建标签</button></td>
+        </tr>
+    </table>
+</body>
+</html>
